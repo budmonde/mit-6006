@@ -1,0 +1,190 @@
+%
+% 6.006 problem set 1 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{listings}
+
+\input{macros}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\theproblemsetnum}{1}
+\newcommand{\releasedate}{Thursday, September 17}
+\newcommand{\partaduedate}{Thursday, October 1}
+\newcommand{\tabUnit}{3ex}
+\newcommand{\tabT}{\hspace*{\tabUnit}}
+
+\title{6.006 PSET 1}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}{February 5, 2015}
+
+\textbf{All parts are due {\bf \partaduedate} at {\bf 11:59PM}}.
+
+\setlength{\parindent}{0pt}
+
+\medskip
+
+\hrulefill
+
+\medskip
+
+{\bf Name:} Budmonde Duinkharjav
+
+\medskip
+
+{\bf Collaborators:} Courtney Guo 
+
+\medskip
+
+\hrulefill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See below for common and useful latex constructs. %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Some useful commands:
+%$f(x) = \Theta(x)$
+%$T(x, y) \leq \log(x) + 2^y + \binom{2n}{n}$
+% {\tt code\_function}
+
+
+% You can create unnumbered lists as follows:
+%\begin{itemize}
+%    \item First item in a list 
+%        \begin{itemize}
+%            \item First item in a list 
+%                \begin{itemize}
+%                    \item First item in a list 
+%                    \item Second item in a list 
+%                \end{itemize}
+%            \item Second item in a list 
+%        \end{itemize}
+%    \item Second item in a list 
+%\end{itemize}
+
+% You can create numbered lists as follows:
+%\begin{enumerate}
+%    \item First item in a list 
+%    \item Second item in a list 
+%    \item Third item in a list
+%\end{enumerate}
+
+% You can write aligned equations as follows:
+%\begin{align} 
+%    \begin{split}
+%        (x+y)^3 &= (x+y)^2(x+y) \\
+%                &= (x^2+2xy+y^2)(x+y) \\
+%                &= (x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3) \\
+%                &= x^3+3x^2y+3xy^2+y^3
+%    \end{split}                                 
+%\end{align}
+
+% You can create grids/matrices as follows:
+%\begin{align}
+%    A = 
+%    \begin{bmatrix}
+%        A_{11} & A_{21} \\
+%        A_{21} & A_{22}
+%    \end{bmatrix}
+%\end{align}
+
+\begin{problems}
+
+\section*{Part A}
+
+\problem  % Problem 1
+
+\begin{problemparts}
+\problempart
+\begin{eqnarray*}
+\theta(f_1) &=& n^3\\
+\theta(f_2) &=& \log n\\
+\theta(f_3) &=& (\log n)^2\\
+\theta(f_4) &=& (\log \log n)^2\\
+\theta(f_5) &=& n \log n\\
+\theta(f_6) &=& n^2 \log n\\
+\theta(f_7) &=& \log \log n\\
+\end{eqnarray*}
+We used the identity $\log(100 n) = \log 100 + \log n$ to simplify expressions for $f_2$ and $f_5$. Apart from that, only the comparison of $f_2$ and $f_4$ are not clear. Using a derivative test we get:
+\begin{equation*}
+\frac{(\log n)'}{[(\log \log n)^2]'} = \frac{1/n}{2 (\log \log n) (1/\log n) (1/n)} = \frac{\log n}{2 \log \log n}
+\end{equation*}
+For large $n$, this goes to infinity. Therefore, the ordering becomes $f_7,f_4,f_2,f_3,f_5,f_6,f_1$. 
+\problempart
+\begin{eqnarray*}
+\theta(f_1) &=& 2^{(\log e) n}\\
+\theta(f_2) &=& 2^n\\
+\theta(f_3) &=& 2^{(\log n)^2}\\
+\theta(f_4) &=& 2^{(\log n)^2 + \log n \log 100}
+\end{eqnarray*}
+From here we see that the ordering is $f_3, f_4, f_2, f_1$.
+\problempart
+\begin{eqnarray*}
+\theta(f_1) &=& 2^{n^2}\\
+\theta(f_2) &=& n\\
+\theta(f_3) &=& n!\\
+\theta(f_4) &=& n^5\\
+\theta(f_5) &=& n^2\\
+\end{eqnarray*}
+We see that the order of $f_1$ and $f_3$ are not clear. We can solve this by taking the $\log$ on both functions and comparing them to determine their order.
+\begin{eqnarray*}
+\theta(\log (2^{n^2})) &=& n^2\\
+\theta(\log (n!)) &=& n \log n\\
+\end{eqnarray*}
+From here we see that the ordering is now $f_2, f_5, f_4, f_3, f_1$.
+\end{problemparts}
+
+\problem  % Problem 2
+\begin{problemparts}
+\problempart
+Using Master Theorem we can find that $n^{\log \frac{3}{2}} \approx n^{0.58}$. As $f(n) = n$, we see that this corresponds to case case 3 of Master's theorem where all the work is done at the leaves of the recurrence tree. Therefore, $T(n) = \theta(n)$.
+\problempart
+SImilar to the previous problem we find that $n^{\log 4 = 2}$. As $f(n) = n^2$ as well, we see that this corresponds to case 2 of Master's theorem where the work is distributed evenly on each level of the recurrence tree. Therefore, $T(n) = \theta(n^2 \log n)$
+\problempart
+\end{problemparts}
+\begin{eqnarray*}
+T(n) &=& T(n-1) + n = T(n-2) + 2n\ ...\\
+T(n) &=& \theta(n^2)
+\end{eqnarray*}
+\problem  % Problem 3
+In pseudo-code,
+\begin{lstlisting}
+# create an array 'buy' of length n with all values equal
+#   to 0 to store the minimum element of each column
+# create a variable 'opt' to store the max profit
+# for each value 'i' of the first time variable 't[0]':
+#   for each value 'j' of the second time variable 't[1]':
+#       store the min of buy[j], buy[j-1] and w[i,j] to buy[j]
+#       find the max of opt and w[i,j] - buy[j]
+# return opt
+\end{lstlisting}
+This problem is essentially a higher dimension case of the example shown in lecture 1. For any given time $(t_i, t_j)$, we will need to have kept the minimum element of the grid $(i-1) \times j$ and $i \times (j-1)$ so that we can compare it to $w(t_i, t_j)$ and store the smaller value of the three to keep track of the cheapest purchase that was possible up to time $(t_i, t_j)$ - the smallest value in the grid $i \times j$.
+\par Then we would iterate through the two dimensional grid from the top left corner horizontally keeping track of the minimum purchase price. This purchase price would then be compared with the current element which is being iterated to update the maximum possible profit.
+\par The main issue we have in keeping one integer (assuming we are dealing with integers) to represent the cheapest purchase price is for different timestamps, we would need to consider different minimum values for different grids being considered. For example, for elements $(t_i, t_j)$ and $(t_k,t_l)$ where $i>k$ but $j<l$, we see that the grids share common elements in $k \times j$. Therefore, representing the minimum purchase price in a single integer value does not work.
+\par We solve this issue by representing the minimum purchase price as an array of length $n$. Here, due to the sequence we are iterating the gridwith, we find that the $(j-1)$th and $j$th elements of the array will represent the minimum purhcase prices of the grids $i \times (j-1)$ and $(i-1) \times j$ respectively.
+\par With this implementation of keeping the minimum purchase prices, we also see that the minimum purchase value we compare with the element $w(t_i, t_j)$ is the $j$th element of the minimum purchase price array. As such, as we finish iterating through each element in the grid, we will have found the highest possible profit.
+\par To keep track of the timestamps we choose for this highest profit, every time we update the values for minimum purchase or highest profit variable, we update the corresponding timestamps.
+\par Since we are iterating through a grid of size $n \times n$ only once and every operation in it is $O(1)$, the total runtime is $O(n^2)$.
+\section*{Part B}
+\problem  % Problem 3
+\begin{problemparts}
+\problempart
+\emph{Submitted.}
+\problempart
+Since we are increasing our search range exponentially, for a given integer $n$, we can find the range in $\theta( \log n)$. Since we are also doing a binary search over a range between $2^k$ and $2^{k+1}$, where $n$ is between the two, we see that we will find the integer in $\theta( \log n)$ as well. Therefore, the total runtime is $\theta( \log n)$.
+\end{problemparts}
+\end{problems}
+
+
+
+\end{document}
+

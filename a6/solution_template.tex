@@ -1,0 +1,152 @@
+%
+% 6.006 problem set 6 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{tikz}
+
+\input{macros}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\theproblemsetnum}{6}
+\newcommand{\releasedate}{Tuesday, November 24, 2015}
+\newcommand{\partaduedate}{Thursday, December 3, 2015}
+\newcommand{\tabUnit}{3ex}
+\newcommand{\tabT}{\hspace*{\tabUnit}}
+
+\title{6.006 PSET 6}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}{Thursday, December 3, 2015}
+
+\textbf{All parts are due {\bf \partaduedate} at {\bf 11:59PM}}.
+
+\setlength{\parindent}{0pt}
+
+\medskip
+
+\hrulefill
+
+\medskip
+
+{\bf Name:} Budmonde Duinkharjav
+
+\medskip
+
+{\bf Collaborators:} Danny Tang 
+
+\medskip
+
+\hrulefill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See below for common and useful latex constructs. %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Some useful commands:
+%$f(x) = \Theta(x)$
+%$T(x, y) \leq \log(x) + 2^y + \binom{2n}{n}$
+% {\tt code\_function}
+
+
+% You can create unnumbered lists as follows:
+%\begin{itemize}
+%    \item First item in a list 
+%        \begin{itemize}
+%            \item First item in a list 
+%                \begin{itemize}
+%                    \item First item in a list 
+%                    \item Second item in a list 
+%                \end{itemize}
+%            \item Second item in a list 
+%        \end{itemize}
+%    \item Second item in a list 
+%\end{itemize}
+
+% You can create numbered lists as follows:
+%\begin{enumerate}
+%    \item First item in a list 
+%    \item Second item in a list 
+%    \item Third item in a list
+%\end{enumerate}
+
+% You can write aligned equations as follows:
+%\begin{align} 
+%    \begin{split}
+%        (x+y)^3 &= (x+y)^2(x+y) \\
+%                &= (x^2+2xy+y^2)(x+y) \\
+%                &= (x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3) \\
+%                &= x^3+3x^2y+3xy^2+y^3
+%    \end{split}                                 
+%\end{align}
+
+% You can create grids/matrices as follows:
+%\begin{align}
+%    A = 
+%    \begin{bmatrix}
+%        A_{11} & A_{21} \\
+%        A_{21} & A_{22}
+%    \end{bmatrix}
+%\end{align}
+
+\begin{problems}
+
+\section*{Part A}
+
+\problem % Problem 1
+\begin{problemparts}
+
+\problempart % Problem 1a
+\begin{eqnarray*}
+f'(x) &=& 2x - 1\\
+x_{i+1} &=& x_i - \frac{f(x_i)}{f'(x_i)}\\
+x_{i+1} &=& x_i - \frac{x_i^2 - x_i - 1}{2x_i - 1}
+\end{eqnarray*}
+\problempart  % Problem 1b
+For a correct guess $x_1 = \phi$, where $\phi = \frac{1 - \sqrt{5}}{2}$, we know that $f(x_1) = \phi^2 - \phi - 1 = 0$. Therefore, $x_{i+1} = x_i - 0 = x_i$. Therefore, we have $x_2 = x_1 = \phi$.
+\end{problemparts}
+
+\problem % Problem 2
+\begin{problemparts}
+
+\problempart % Problem 2a
+Let's say we are given all $S(i,j)$ for $i < a$ and $j < b$. Then we claim that
+
+\begin{eqnarray*}
+S(1,b) &=& \max\limits_{0 \leq i < b} A_i\\
+S(a,b) &=& \left\{\def\arraystretch{1.2}%
+  \begin{array}{@{}l@{\quad}l@{}}
+    \max(S(a-1, b-D) + A_{b-1}, S(a,b-1)) & \text{if } b > (a-1)D\\
+    S(a-1, b-D) + A_{b-1} & \text{if } b = (a-1)D\\
+  \end{array}\right.\\
+\end{eqnarray*}
+In the base case, we know that there is only one assignment due in the entire range of $b$. It is clear that the max element of $A_i$ in this case would give us the optimal value for $S(1,b)$. In the general case, assuming we know the values of $S(a-1, b-D)$ and $S(a,b-1)$, we have two possible conditions: either the last element is an assignment due date or it's not. The first and second elements of the $\max$ statement in the equation describes either conditions. Note that if we find that $b < (a-1)D$ the value of $S(a,b-1)$ will be undefined due to the pigeonhole principle.
+\problempart  % Problem 2b
+From the solution to $S(a,b)$ we found in \emph{(a)}, we will construct the following recursive algorithm: Starting from the last element of the list $A$, we call the function $S(k,n)$ as described in part \emph{(a)}. This function will then recursively call both functions in the argument until it reaches the base case of $S(1,b)$. As we complete the function calls from the base case up the recursion tree, we will mark each element in the list as either having had an assignment that day or not. This will be determined by which value in the $\max$ statement is chosen for the given $S(a,b)$ function call: if the first term is chosen, we have an assignment on that day and otherwise we don't for that given $S(a,b)$. In the base case $S(1,b)$, the element with the maximum value of $A_i$ will be the day with the assignment and all other days will not have an assignment in them. Of course, as we return the function values, we will store them in a dictionary to prevent the function from being called multiple times. After completing this procedure we can now look for the marks we put on each element as follows. Starting from the first element we look for when an element has been marked to have an assignment with $S(1,i)$ where $i$ is the index of the element. As we find this first element we now search $S(2,i)$ and so on until we reach $S(n,k)$. By then we should have found all the days in $T(n,k)$. Since we compute $nk$ calls of $S(a,b)$ and each call takes $O(1)$ time, the total runtime is $O(nk)$.
+\end{problemparts}
+
+\section*{Part B}
+\problem % Problem 3
+\begin{problemparts}
+
+\problempart % Problem 3a
+We can model this problem as follows. We may treat the whole string $s$ as a graph with $n$ nodes. I.e. each character in the string is a node named by its index in the string. In this graph, an edge is a pointer which points from the beginning of a word to the beginning of all possible following words in the string (which depends on the list $L$ containing the possible word choices). To make this look-up faster, we will store all the words in $L$ in a dictionary {\tt words} along with the value of $t$, the length of the longest possible word in {\tt words} -- this will take an initialization runtime of $O(d)$ where $d$ is the sum of lengths of all the words in {\tt words}. To allow our graph to know what the end node is, we will create an extra node after the last character of the string to declare that we reached the end of the string -- let's call this node $end$. Each edge will be weighted by the number of nodes it jumped over, cubed -- the same word weight we defined for this problem. Given such a graph, the problem we have now is to determine whether a path connecting the first node to the $end$ node exists and if so, determine what is the longest such path.\\
+
+With the data structure defined as above, we may now describe the algorithm to find the longest possible path from $source$ to $end$. We begin by traversing back the graph from the $end$ node by the decreasing index of the string. I.e. traverse from the end of the string backwards. For each node, we do the base case of checking whether an edge from the current node to the $end$ node exists. If it does, we simply mark the node as reachable with the points the word would give. We justify this statement by the fact that even if there were two shorter words that lead to the $end$ node as well, the points would be strictly less since $(a + b)^3 > a^3 + b^3$. Keep in mind we only do the base case operations for the first $t$ iterations as we know that single edges longer than $t$ do not exist in {\tt words}. Now for the general case, for every node, we check all the edges that leave this node and check whether the target node has been marked as reachable. If it has been marked, we mark the current node as reachable with the current node's points being the points of the target node, plus the edge that was used to reach it. In case we find multiple reachable target nodes we simply choose the path with the highest total points. If all possible edges don't have a reachable node however, we mark the current node as not reachable and move on to the next node to process. Again, keep in mind that we check only $t$ times whether an edge exists by looking up whether the sub-string exists in {\tt words}. After processing all nodes, we will have found the longest path from the first node to the $end$ node if it exists from how we marked the first node.\\
+
+Since for all $n$ nodes, we only check the existence of $t$ reachable paths each taking $O(1)$ time totalling (along with the initialization step) a runtime of $O(nt + d)$.
+
+\problempart \emph{Submit your implemented python script.}  % Problem 3b
+
+\end{problemparts}
+\end{problems}
+\end{document}
+

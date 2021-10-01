@@ -1,0 +1,133 @@
+%
+% 6.006 problem set 4 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\usepackage{amsmath}
+\usepackage{color}
+
+\input{macros}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\theproblemsetnum}{4}
+\newcommand{\releasedate}{Thursday, October 29, 2015}
+\newcommand{\partaduedate}{Tuesday, November 10, 2015}
+\newcommand{\tabUnit}{3ex}
+\newcommand{\tabT}{\hspace*{\tabUnit}}
+
+\title{6.006 PSET 4}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}{Thursday, October 29, 2015}
+
+\textbf{All parts are due {\bf \partaduedate} at {\bf 11:59PM}}.
+
+\setlength{\parindent}{0pt}
+
+\medskip
+
+\hrulefill
+
+\medskip
+
+{\bf Name:} Budmonde Duinkharjav
+
+\medskip
+
+{\bf Collaborators:} Danny Tang, Cheuk-Wing Fan 
+
+\medskip
+
+\hrulefill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See below for common and useful latex constructs. %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Some useful commands:
+%$f(x) = \Theta(x)$
+%$T(x, y) \leq \log(x) + 2^y + \binom{2n}{n}$
+% {\tt code\_function}
+
+
+% You can create unnumbered lists as follows:
+%\begin{itemize}
+%    \item First item in a list 
+%        \begin{itemize}
+%            \item First item in a list 
+%                \begin{itemize}
+%                    \item First item in a list 
+%                    \item Second item in a list 
+%                \end{itemize}
+%            \item Second item in a list 
+%        \end{itemize}
+%    \item Second item in a list 
+%\end{itemize}
+
+% You can create numbered lists as follows:
+%\begin{enumerate}
+%    \item First item in a list 
+%    \item Second item in a list 
+%    \item Third item in a list
+%\end{enumerate}
+
+% You can write aligned equations as follows:
+%\begin{align} 
+%    \begin{split}
+%        (x+y)^3 &= (x+y)^2(x+y) \\
+%                &= (x^2+2xy+y^2)(x+y) \\
+%                &= (x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3) \\
+%                &= x^3+3x^2y+3xy^2+y^3
+%    \end{split}                                 
+%\end{align}
+
+% You can create grids/matrices as follows:
+%\begin{align}
+%    A = 
+%    \begin{bmatrix}
+%        A_{11} & A_{21} \\
+%        A_{21} & A_{22}
+%    \end{bmatrix}
+%\end{align}
+
+\begin{problems}
+
+\section*{Part A}
+
+\problem  % Problem 1
+We will approach this problem by implementing a slightly adjusted \emph{BFS} algorithm. Let's denote the starting node as $s$ and the goal node as $g$. It is obvious that if there exists a path from $s$ to $g$ which only uses edges of $0$ weight, we would choose that as our shortest path and the length of that path would hence be $0$. Moreover, if there are multiple paths which satisfy this requirement, this non-unique path would still be a shortest path. This emphasizes the fact that we should always prefer to find a path of only $0$ length edges for our solution \emph{and} that this path doesn't have to be unique -- as long as we have one path, we are done. Only when such paths are exhausted should we start using edges of length $2$.\\
+
+We implement this algorithm using the following. To keep track of which node to expand we will keep a deque and pop from the left side ({\tt popleft}) in each iteration. When expanding a node, if there is an edge of length $0$, we push it to the beginning of the deque ({\tt appendleft}) and if the length is $2$, we push it to the end ({\tt append}). The intuition behind this is the fact that since the $0$ length paths are equivalent (even if two paths connecting two nodes use different number of edges, they are both valid shortest paths between the two nodes as the total length sums to $0$). This point justifies pushing the $0$ length edges to the beginning of the deque without minding whether the \emph{BFS} property of finding the shortest path is broken or not. The edges of length $2$, however, still adhere to the \emph{BFS} property as we are pushing them in the same order as a normal \emph{BFS} implementation -- \emph{FIFO}.\\
+
+With this algorithm, you are guaranteed to have exhausted all $0$ edges connected to $s$ be used before proceeding on to a length $2$ node before reiterating through the previous step all over again. As such, the shortest path will still be found using this algorithm. The runtime is still $O(E+V)$ as this implementation is pretty much equivalent to normal \emph{BFS} as it pushes and pops a node only once and does $O(1)$ work pushing and popping each node.
+\problem  % Problem 2
+\begin{problemparts}
+\problempart % Problem 2a
+Since this is an undirected graph, we know that there will be no cross-edges. Therefore a subtree from the root will premanently separate it from all the other subtrees connected to directly to the root. Therefore, we see that if the root has $k$ subtrees, there will be $k$ connected components.
+\problempart % Problem 2b
+Following the reasoning from part \emph{(a)}, we know that there are no cross edges. For the node given in \emph{(b)}, we know that there is no backedge connecting the ancestors to the subtree node connects. Therefore, the graph becomes disconnected. 
+\problempart % Problem 2c
+We do this procedure by first setting all $v.top$s to be equal to $v.d$. Then, starting from the root down each node we traverse down the until we encounter a forward-edge. For a node with a forward edge - let's call it $N$, we will begin a sub-procedure called {\tt UPDATE} to jump down to the other end of this edge and traverse back up while updating every $v.top$ to be $N$'s $v.top$ if the current assignment of the $v.top$ is larger than $N$'s $v.top$. If a $v.top$ of a node is smaller than $N$'s $v.top$, we will abort this sub-procedure and jump back to $N$ and continue traversing down the tree until we find a new forward edge to reiterate the process. The reason for aborting {\tt UPDATE} for the following reason.\\
+During an {\tt UPDATE} sub-procedure, if we were to encounter a node which was already traversed up due to some prior {\tt UPDATE} sub-procedure, it means that this $v.top$ would indeed be smaller than the one we would be comparing to in our current {\tt UPDATE} sub-procedure. Moreover, we also know that any node above it will also have been updated by some prior iteration of {\tt UPDATE}. Therefore, aborting and continuing our traversal down every node therefore becomes acceptable.\\
+Since the overall traversal is done from the root, we ensure that the values we update $v.top$ with must be the minimum $w.d$ where $w.d$ is as defined in the Problem Set question. As for runtime, we pre-processed the tree to set all $v.top$ to be $v.d$ for each node once, do one large traversal down every node, up to one traversal upwards -- since you update $v.top$ only once, and up to $E$ initiations of {\tt UPDATE} sub-procedures all of which take $O(1)$ time. Therefore the total runtime is $O(E+V)$.
+\problempart % Problem 2d
+The intuition behind the solution is that according to part \emph{(a)}, removing the root of a tree, will create $n$ connected components where $n$ is the number of children the root has. Then, using part \emph{(b)}, we can see that if there is no backedge connecting the subtree of a node to its ancestors, removing the node will disconnect it from its ancestors. Then we see that removing some node with $n$ children $m$ of which have backedges connecting to the ancestors of this node will create $n+1-m$ connected components. Now we simply need to find how to count up the number $m$ for each node and find the node with maximum $n+1-m$ value.\\
+To do this, we can use part \emph{(c)}. For some node $N$ and child $D$, if there is a backedge connecting some descendant of $D$ to an ancestor of $N$, the $v.top$s of node $N$ and $D$ will be the same. If not, they will be different. Therefore, we can find $m$, the number of backedges connecting the ancestors of a node to its descendants, by looking at how many children have a different $v.top$ than itself. Since we can compute all the $v.top$s in $O(1)$ time and we do $O(V+E)$ comparisons (compare each all nodes for each edge), the total runtime of $O(E+V)$.
+\end{problemparts}
+
+\section*{Part B}
+\problem  % Problem 3
+\begin{problemparts}
+\problempart \emph{Submit your implemented python script.}  % Problem 3a
+\problempart \emph{Submit your implemented python script.}  % Problem 3b
+\end{problemparts}
+\end{problems}
+
+\end{document}
+

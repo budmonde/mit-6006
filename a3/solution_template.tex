@@ -1,0 +1,136 @@
+%
+% 6.006 problem set 3 solutions template
+%
+\documentclass[12pt,twoside]{article}
+
+\usepackage{amsmath}
+\usepackage{color}
+
+\input{macros}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\theproblemsetnum}{3}
+\newcommand{\releasedate}{Thursday, October 16}
+\newcommand{\partaduedate}{Tuesday, October 27}
+\newcommand{\tabUnit}{3ex}
+\newcommand{\tabT}{\hspace*{\tabUnit}}
+
+\title{6.006 PSET 2}
+
+\begin{document}
+
+\handout{Problem Set \theproblemsetnum}{October 16, 2015}
+
+\textbf{All parts are due {\bf \partaduedate} at {\bf 11:59PM}}.
+
+\setlength{\parindent}{0pt}
+
+\medskip
+
+\hrulefill
+
+\medskip
+
+{\bf Name:} Budmonde Duinkharjav
+
+\medskip
+
+{\bf Collaborators:} Courtney Guo, Joseph Lin 
+
+\medskip
+
+\hrulefill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% See below for common and useful latex constructs. %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Some useful commands:
+%$f(x) = \Theta(x)$
+%$T(x, y) \leq \log(x) + 2^y + \binom{2n}{n}$
+% {\tt code\_function}
+
+
+% You can create unnumbered lists as follows:
+%\begin{itemize}
+%    \item First item in a list 
+%        \begin{itemize}
+%            \item First item in a list 
+%                \begin{itemize}
+%                    \item First item in a list 
+%                    \item Second item in a list 
+%                \end{itemize}
+%            \item Second item in a list 
+%        \end{itemize}
+%    \item Second item in a list 
+%\end{itemize}
+
+% You can create numbered lists as follows:
+%\begin{enumerate}
+%    \item First item in a list 
+%    \item Second item in a list 
+%    \item Third item in a list
+%\end{enumerate}
+
+% You can write aligned equations as follows:
+%\begin{align} 
+%    \begin{split}
+%        (x+y)^3 &= (x+y)^2(x+y) \\
+%                &= (x^2+2xy+y^2)(x+y) \\
+%                &= (x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3) \\
+%                &= x^3+3x^2y+3xy^2+y^3
+%    \end{split}                                 
+%\end{align}
+
+% You can create grids/matrices as follows:
+%\begin{align}
+%    A = 
+%    \begin{bmatrix}
+%        A_{11} & A_{21} \\
+%        A_{21} & A_{22}
+%    \end{bmatrix}
+%\end{align}
+
+\begin{problems}
+
+\section*{Part A}
+
+\problem  % Problem 1
+\begin{problemparts}
+\problempart
+First let's consider how to hash individual files. We may use {\tt hash\_string(s)} to hash the file's name and contents separately. Here, we make the assumption that the hash function outputs a $b$ bit number. Since each file's name and contents are $O(1)$, we can assert that the hash function takes $O(1)$ time. We can then combine these hashes by say multiplying the filename by some constant and adding it to the hash of the contents of the file. Finally, we $mod$ the sum for some $k$ to contain the hash within $b$ bits. Note that we require $b = \Omega (\log n)$ as we want every file/directory to have a unique hash in case there are no duplicates. We also want $k = \theta(b)$ as we want to use potentially all the bits to hash files/directories. Doing so, we know that there is a very low probability of collisions occurring unless the files are duplicates.\\
+For a directory, we may sort all the files and directories in alphabetic order, since the names only contain lower case letters and '.'. Since the length of each file name and the number of files in each directory is $O(1)$, we may assert that this sort takes $O(1)$ time. We can then concatenate each file/directory's hash, take $mod\ k$ and we will have calculated a hash of the entire directory in $O(1)$ time given that we know the hash of every file and directory in it. In the base case, a directory will have only files so the previous statement is true. With this structure, unless a directory has the exact same files and sub-directories, there should not occur a collision.
+\problempart
+Using the implementation of a hash function for files and directories, we see that by recursively calling the hash function on the root directory, we can find the hashes of all files and directories. Since we go through each file/directory once and do $O(1)$ on each, we can compute all $n$ hashes in $O(n)$ time.
+\problempart
+Since we now have a hash table linking a $b$ bit number to files and directories, we can traverse through the list of directories/files to create a reverse hash table with the keys being our actual hash values. Finally, we traverse in the reverse hash table and see if there are any collisions. Each collision we encounter should be instances of duplicate files as their hash values should match. Since we only traverse through each element once and spend $O(1)$ time in each, we have a total runtime of $O(n)$. If we want to have the same output as in the pset, we can simply make the location of a file/directory to be a property of the object we are hashing.
+\end{problemparts}
+\problem  % Problem 2
+\begin{problemparts}
+\problempart
+We can hash each element in the string as we iterate through each of them and if we reach the end of the string without any collisions, we have a string with no duplicates. Otherwise, there is a collision. Since we iterate through the string only once and hashing an element takes $O(1)$ time, the total runtime is $O(|s|)$.
+\problempart
+Let's consider two queries $a$ and $b$ both of length $k$. We will traverse through each string and make two dictionaries, each mapping a potential permutation which satisfies the condition that $a$ permutates to $b$ and vice versa as a dictionary. For each iteration we see whether the mapping already exists in the dictionary. If so and it is consistent we move on. But if it isn't consistent with the current iteration, we know it's {\tt False} since there is a conflict in a permutation. If this mapping, however, does not exist, we add it to the dictionary and move on. We do the same procedure for the other dictionary the other way around just so that we don't have a mapping where two different keys map to the same value. Going through the string once, if we do not encounter any conflicts in each mapping, the permutation is indeed possible and therefore the output would be {\tt True}, otherwise {\tt False}. In this solution, we go through the string only once and do $O(1)$ in each iteration since all hashing actions are made in $O(1)$ time, the total runtime will be $O(k)$. 
+\problempart
+By the rolling hash method, we compute $n$ hashes for each segment ranging from $(0,0)$ to $(0,n-1)$ where $n$ is the length of the binary string. We then $mod$ this by some $k$ such that $\log k = O(\log n)$ as referred in lecture. Then for each query, we can find the hash of the substring using the rolling hash method.
+\problempart
+This solution involves representing a \emph{base} as binary strings of length $1$ to $n$ which represent its frequency. I.e. if the letter is at index $i$ of the sequence, there will be a $1$ at index $i$ of the binary string and $0$ otherwise. Finally the binary strings should be $mod\ k$-ed for a $k$ chosen such that we satisfy the condition $\log k = O(\log n)$ as referred in lecture. Iterating this $n | \Sigma |$ times, we will have that many binary strings representing the occurrence of all \emph{bases}, $n$ for each \emph{base}. Note that much of the details of these operations are similar to part \emph{(c)}.\\
+
+Then when we compare two queries, we simply use the rolling hash method to find the appropriate substring representing all the \emph{bases} using the precomputed hashes of the substrings we computed in the paragraph above, sort them, and see if they match each other. If they don't, the permutation is impossible. If they do, the permutation exists. Getting the all the substrings takes $O(| \Sigma | )$ time, the sort takes $O(| \Sigma | \log | \Sigma|)$ time and the comparison takes $O(| \Sigma|)$ time. The total runtime is therefore $O(| \Sigma | \log | \Sigma|)$.
+\end{problemparts}
+\section*{Part B}
+\problem  % Problem 3
+\begin{problemparts}
+\problempart % Problem 3A
+The easiest way to represent this is to create a dictionary with frequencies of each letter in the string. In which case, since there are constant letters in the alphabet, the runtime for comparing two dictionaries becomes $O(1)$. If the dictionaries are the same, then we know that they have the same letters neglecting the order in which they were in -- which is what we want. Then given two words $W$ and $W'$, and that they differ by one letter, we can simply decrease the frequency of the differing letter in $W$ if it is not equal to zero and then increase the frequency of the differing letter in $W'$. Thus we have successfully converted $W$ into $W'$ in $O(1)$ time since all operations in the solution takes $O(1)$ time and there are constant number of them.
+\problempart \emph{Submit your implemented python script.}  % Problem 3B
+\end{problemparts}
+\end{problems}
+
+\end{document}
+
